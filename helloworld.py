@@ -26,11 +26,9 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
         self.response.out.write('<html><body>')
         guestbook_name = self.request.get('guestbook_name')
-        greetings = db.GqlQuery('SELECT * ' \
-                                'FROM Greeting '\
-                                'WHERE ANCESTOR IS :1 '\
-                                'ORDER BY date DESC LIMIT 10',
-                                guestbook_key(guestbook_name))
+        greeting_query = Greeting.all().ancestor(
+            guestbook_key(guestbook_name)).order('-date')
+        greetings = greeting_query.fetch(10)
 
         for greeting in greetings:
             if greeting.author:
